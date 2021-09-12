@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "829286989819",
+    "firebase_url": "https://toko-online-pnp-default-rtdb.firebaseio.com",
+    "project_id": "toko-online-pnp",
+    "storage_bucket": "toko-online-pnp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829286989819:android:b5eda7c1d333f02d33d55e",
+        "android_client_info": {
+          "package_name": "com.android.messeggerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "829286989819-7rpt09n076eb3s6lv8b2onm9fs2q1dfl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcS8M--IGm1TZo1YK_mGO4d_UzzPV94pI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "829286989819-7rpt09n076eb3s6lv8b2onm9fs2q1dfl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829286989819:android:062c9a8d5310425433d55e",
+        "android_client_info": {
+          "package_name": "com.android.tokoonlinepnp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "829286989819-uq1c5q1nm0q4pe662qqqkei0s8tvubch.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.tokoonlinepnp",
+            "certificate_hash": "dd54b1cd323f7b24c63606499a709ad477829d8d"
+          }
+        },
+        {
+          "client_id": "829286989819-7rpt09n076eb3s6lv8b2onm9fs2q1dfl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcS8M--IGm1TZo1YK_mGO4d_UzzPV94pI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "829286989819-7rpt09n076eb3s6lv8b2onm9fs2q1dfl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829286989819:android:d43507288954117933d55e",
+        "android_client_info": {
+          "package_name": "com.android.tokoonlinepnpdriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "829286989819-7rpt09n076eb3s6lv8b2onm9fs2q1dfl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcS8M--IGm1TZo1YK_mGO4d_UzzPV94pI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "829286989819-7rpt09n076eb3s6lv8b2onm9fs2q1dfl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
