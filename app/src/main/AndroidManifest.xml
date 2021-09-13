@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MesseggerApp">
+        <activity android:name=".MessageChatActivity"></activity>
         <activity android:name=".WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,9 +22,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MesseggerApp.NoActionBar">
-
-        </activity>
+            android:theme="@style/Theme.MesseggerApp.NoActionBar"></activity>
     </application>
 
 </manifest>

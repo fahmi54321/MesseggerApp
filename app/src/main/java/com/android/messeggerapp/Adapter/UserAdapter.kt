@@ -1,11 +1,15 @@
 package com.android.messeggerapp.Adapter
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.android.messeggerapp.MessageChatActivity
 import com.android.messeggerapp.Model.Users
 import com.android.messeggerapp.R
 import de.hdodenhof.circleimageview.CircleImageView
@@ -55,6 +59,34 @@ class UserAdapter(
         val user: Users? = mUsers[position]
         holder.userNameTxt.text = user?.getUsername()
 //        Picasso.get().load(user?.getProfile()).into(binding.profileImage)
+
+
+//        todo 3 send text and image (next MessageChatActivity)
+        holder.itemView.setOnClickListener {
+            val options = arrayOf<CharSequence>(
+                "Send Message",
+                "Visit Profile"
+            )
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(mContext)
+            builder.setTitle("What do you wannt?")
+            builder.setItems(options, DialogInterface.OnClickListener { dialogInterface, position ->
+
+                if (position == 0) {
+                    val intent = Intent(mContext, MessageChatActivity::class.java)
+                    intent.putExtra("visit_id", user?.getUID())
+                    mContext.startActivity(intent)
+                }
+
+                if (position == 1) {
+
+                }
+
+            })
+
+            builder.show()
+        }
+
     }
 
     override fun getItemCount(): Int {
