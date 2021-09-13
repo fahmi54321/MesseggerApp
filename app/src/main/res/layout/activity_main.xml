@@ -26,6 +26,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_profile"
+                android:id="@+id/profileImage"
                 android:backgroundTint="@color/white"></de.hdodenhof.circleimageview.CircleImageView>
 
             <TextView

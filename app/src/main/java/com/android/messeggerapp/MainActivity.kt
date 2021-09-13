@@ -15,16 +15,32 @@ import androidx.viewpager.widget.ViewPager
 import com.android.messeggerapp.Fragment.ChatsFragment
 import com.android.messeggerapp.Fragment.SearchFragment
 import com.android.messeggerapp.Fragment.SettingsFragment
+import com.android.messeggerapp.Model.Users
+import com.android.messeggerapp.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
 
 class MainActivity : AppCompatActivity() {
 
+
+//    todo 1 display name and image
+    var refUsers : DatabaseReference?=null
+    var firebaseUser : FirebaseUser?=null
+
+    lateinit var binding : ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+//        todo 2 display name and image
+        firebaseUser = FirebaseAuth.getInstance().currentUser
+        refUsers = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser?.uid?:"")
 
 //        todo 2 view pager
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -42,6 +58,23 @@ class MainActivity : AppCompatActivity() {
         viewPagerAdapter.addFragment(SettingsFragment(),"Settings")
         viewPager.adapter = viewPagerAdapter
         tablayout.setupWithViewPager(viewPager)
+
+//        todo 2 display name and image
+        refUsers?.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists()){
+                    val user : Users? = p0.getValue(Users::class.java)
+                    binding.userName.text = user?.getUsername()
+//                    Picasso.get().load(user?.getProfile()).into(binding.profileImage)
+
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
 
     }
 
