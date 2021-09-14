@@ -17,10 +17,7 @@ import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
@@ -28,6 +25,7 @@ import com.squareup.picasso.Picasso
 
 class MessageChatActivity : AppCompatActivity() {
 
+    private var reference: DatabaseReference?=null
     lateinit var binding: ActivityMessageChatBinding
 
     //    todo 4 send text and image
@@ -44,6 +42,18 @@ class MessageChatActivity : AppCompatActivity() {
         binding = ActivityMessageChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        //    todo 4 display chatlist and total number
+        setSupportActionBar(binding.toolbarMessageChat)
+        supportActionBar?.title = ""
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbarMessageChat.setNavigationOnClickListener {
+            val intent = Intent(this,WelcomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
+
         //    todo 5 send text and image
         intent = intent
         userIdVisit = intent.getStringExtra("visit_id") ?: ""
@@ -57,9 +67,9 @@ class MessageChatActivity : AppCompatActivity() {
         recycler_view_chats.layoutManager = linearLayoutManager
 
         //    todo 7 send text and image
-        val reference = FirebaseDatabase.getInstance().reference
+        reference = FirebaseDatabase.getInstance().reference
             .child("Users").child(userIdVisit)
-        reference.addValueEventListener(object : ValueEventListener {
+        reference?.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
                 val user: Users? = p0.getValue(Users::class.java)
                 binding.usernameMchat.text = user?.getUsername()
@@ -95,6 +105,9 @@ class MessageChatActivity : AppCompatActivity() {
             intent.type = "image/*"
             startActivityForResult(Intent.createChooser(intent, "Pick Image"), 438)
         }
+
+        //    todo 7 display chatlist and total number (next MainActivity)
+        seenMessage(userIdVisit)
     }
 
     //    todo 6 send text and image
@@ -219,5 +232,36 @@ class MessageChatActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    //    todo 5 display chatlist and total number
+    var seenListener:ValueEventListener?=null
+    private fun seenMessage(userId:String){
+        val reference = FirebaseDatabase.getInstance().reference.child("Chats")
+        seenListener = reference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(p0: DataSnapshot) {
+                for(dataSnapshot in p0.children){
+                    val chat = dataSnapshot.getValue(Chat::class.java)
+                    if (chat?.getReceiver().equals(firebaseUser?.uid) && chat?.getSender().equals(userId)){
+                        val hashMap = HashMap<String,Any>()
+                        hashMap["isseen"] = true
+                        dataSnapshot.ref.updateChildren(hashMap)
+                    }
+
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+    //    todo 6 display chatlist and total number
+    override fun onPause() {
+        super.onPause()
+
+        reference?.removeEventListener(seenListener!!)
     }
 }

@@ -15,6 +15,7 @@ import androidx.viewpager.widget.ViewPager
 import com.android.messeggerapp.Fragment.ChatsFragment
 import com.android.messeggerapp.Fragment.SearchFragment
 import com.android.messeggerapp.Fragment.SettingsFragment
+import com.android.messeggerapp.Model.Chat
 import com.android.messeggerapp.Model.Users
 import com.android.messeggerapp.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
@@ -48,16 +49,46 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = ""
 
 //        todo 3 view pager
-        val tablayout: TabLayout = findViewById(R.id.tab_layout)
-        val viewPager: ViewPager = findViewById(R.id.view_pager)
-        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+//        val tablayout: TabLayout = findViewById(R.id.tab_layout)
+//        val viewPager: ViewPager = findViewById(R.id.view_pager)
+//        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
 
 //        todo 5 view pager (finish)
-        viewPagerAdapter.addFragment(ChatsFragment(),"Chats")
-        viewPagerAdapter.addFragment(SearchFragment(),"Search")
-        viewPagerAdapter.addFragment(SettingsFragment(),"Settings")
-        viewPager.adapter = viewPagerAdapter
-        tablayout.setupWithViewPager(viewPager)
+//        viewPagerAdapter.addFragment(ChatsFragment(),"Chats")
+//        viewPagerAdapter.addFragment(SearchFragment(),"Search")
+//        viewPagerAdapter.addFragment(SettingsFragment(),"Settings")
+//        viewPager.adapter = viewPagerAdapter
+//        tablayout.setupWithViewPager(viewPager)
+
+        //    todo 8 display chatlist and total number (finish)
+        val ref = FirebaseDatabase.getInstance().reference.child("Chats")
+        ref.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(p0: DataSnapshot) {
+                val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+                var countUnreadMessages = 0
+                for (dataSnapshot in p0.children){
+                    val chat = dataSnapshot.getValue(Chat::class.java)
+                    if (chat?.getReceiver().equals(firebaseUser?.uid) && !chat?.getIsSeen()!!){
+                        countUnreadMessages+=1
+                    }
+                }
+                if (countUnreadMessages == 0){
+                    viewPagerAdapter.addFragment(ChatsFragment(),"Chats")
+                }else{
+                    viewPagerAdapter.addFragment(ChatsFragment(),"($countUnreadMessages) Chats")
+                }
+
+                viewPagerAdapter.addFragment(SearchFragment(),"Search")
+                viewPagerAdapter.addFragment(SettingsFragment(),"Settings")
+                binding.viewPager.adapter = viewPagerAdapter
+                binding.tabLayout.setupWithViewPager(binding.viewPager)
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+            }
+
+        })
+
 
 //        todo 2 display name and image
         refUsers?.addValueEventListener(object : ValueEventListener{
