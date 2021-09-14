@@ -7,6 +7,10 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.android.messeggerapp.Adapter.ChatAdapter
+import com.android.messeggerapp.Model.Chat
 import com.android.messeggerapp.Model.Users
 import com.android.messeggerapp.databinding.ActivityMessageChatBinding
 import com.google.android.gms.tasks.Continuation
@@ -30,6 +34,11 @@ class MessageChatActivity : AppCompatActivity() {
     var userIdVisit: String = ""
     var firebaseUser: FirebaseUser? = null
 
+    //todo 6 read and display message
+    var chatAdapter: ChatAdapter? = null
+    var mChatList: List<Chat>? = null
+    lateinit var recycler_view_chats:RecyclerView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMessageChatBinding.inflate(layoutInflater)
@@ -40,6 +49,12 @@ class MessageChatActivity : AppCompatActivity() {
         userIdVisit = intent.getStringExtra("visit_id") ?: ""
         firebaseUser = FirebaseAuth.getInstance().currentUser
 
+        //todo 6 read and display message
+        recycler_view_chats = findViewById(R.id.recycler_view_chats)
+        recycler_view_chats.setHasFixedSize(true)
+        var linearLayoutManager = LinearLayoutManager(applicationContext)
+        linearLayoutManager.stackFromEnd = true
+        recycler_view_chats.layoutManager = linearLayoutManager
 
         //    todo 7 send text and image
         val reference = FirebaseDatabase.getInstance().reference
@@ -49,6 +64,9 @@ class MessageChatActivity : AppCompatActivity() {
                 val user: Users? = p0.getValue(Users::class.java)
                 binding.usernameMchat.text = user?.getUsername()
 //                Picasso.get().load(user?.getProfile()).into(binding.profileImageMchat)
+
+                //todo 7 read and display message
+                retriveMessages(firebaseUser?.uid,userIdVisit,user?.getProfile())
 
             }
 
@@ -100,12 +118,12 @@ class MessageChatActivity : AppCompatActivity() {
                     val chatsListReference = FirebaseDatabase.getInstance()
                         .reference
                         .child("ChatLists")
-                        .child(firebaseUser?.uid?:"")
+                        .child(firebaseUser?.uid ?: "")
                         .child(userIdVisit)
 
-                    chatsListReference.addListenerForSingleValueEvent(object : ValueEventListener{
+                    chatsListReference.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(p0: DataSnapshot) {
-                            if (!p0.exists()){
+                            if (!p0.exists()) {
                                 chatsListReference.child("id").setValue(userIdVisit)
                             }
 
@@ -113,7 +131,7 @@ class MessageChatActivity : AppCompatActivity() {
                                 .reference
                                 .child("ChatLists")
                                 .child(userIdVisit)
-                                .child(firebaseUser?.uid?:"")
+                                .child(firebaseUser?.uid ?: "")
                             chatsListReceiverRef.child("id").setValue(firebaseUser?.uid)
                         }
 
@@ -121,7 +139,6 @@ class MessageChatActivity : AppCompatActivity() {
                         }
 
                     })
-
 
 
                     val reference = FirebaseDatabase.getInstance().reference
@@ -136,7 +153,7 @@ class MessageChatActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 438 && resultCode == RESULT_OK && data!=null && data?.data != null) {
+        if (requestCode == 438 && resultCode == RESULT_OK && data != null && data?.data != null) {
             val progressBar = ProgressDialog(this)
             progressBar.setMessage("Image is uploading, please wait...")
             progressBar.show()
@@ -158,7 +175,7 @@ class MessageChatActivity : AppCompatActivity() {
                 }
                 return@Continuation filePath.downloadUrl
             }).addOnCompleteListener {
-                if (it.isSuccessful){
+                if (it.isSuccessful) {
                     val downloadUrl = it.result
                     val url = downloadUrl.toString()
 
@@ -170,11 +187,37 @@ class MessageChatActivity : AppCompatActivity() {
                     messageHashMap["url"] = url
                     messageHashMap["messageId"] = messageId
 
-                    ref.child("Chats").child(messageId?:"").setValue(messageHashMap)
+                    ref.child("Chats").child(messageId ?: "").setValue(messageHashMap)
 
                     progressBar.dismiss()
                 }
             }
         }
+    }
+
+    //todo 7 read and display message (finish)
+    private fun retriveMessages(senderId: String?, receiverId: String?, receiverImageUrl: String?) {
+        mChatList = ArrayList()
+        val reference = FirebaseDatabase.getInstance().reference.child("Chats")
+        reference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(p0: DataSnapshot) {
+                (mChatList as ArrayList<Chat>).clear()
+                for (snapshot in p0.children){
+                    val chat = snapshot.getValue(Chat::class.java)
+
+                    if (chat?.getReceiver().equals(senderId) && chat?.getSender().equals(receiverId)
+                        || chat?.getReceiver().equals(receiverId) && chat?.getSender().equals(senderId)){
+                        (mChatList as ArrayList<Chat>).add(chat!!)
+                    }
+                    chatAdapter = ChatAdapter(this@MessageChatActivity,(mChatList as ArrayList<Chat>),receiverImageUrl?:"")
+                    recycler_view_chats.adapter = chatAdapter
+
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+            }
+
+        })
     }
 }
