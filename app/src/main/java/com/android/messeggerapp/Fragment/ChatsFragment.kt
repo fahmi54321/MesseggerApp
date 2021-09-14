@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.messeggerapp.Adapter.UserAdapter
 import com.android.messeggerapp.Model.Chatlist
 import com.android.messeggerapp.Model.Users
+import com.android.messeggerapp.Notifications.Token
 import com.android.messeggerapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -17,6 +18,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.iid.FirebaseInstanceId
 
 class ChatsFragment : Fragment() {
 
@@ -56,8 +58,19 @@ class ChatsFragment : Fragment() {
 
         })
 
+        //todo 10 push notification
+        updateToken(FirebaseInstanceId.getInstance().token)
+
 
         return view
+    }
+
+    //todo 10 push notification
+    private fun updateToken(token: String?)
+    {
+        val ref = FirebaseDatabase.getInstance().reference.child("Tokens")
+        val token1 = Token(token!!)
+        ref.child(firebaseUser!!.uid).setValue(token1)
     }
 
 
